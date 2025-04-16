@@ -20,7 +20,12 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Enable CORS
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://rvsxvt-8000.csb.app'],
+    origin: [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'https://rvsxvt-8000.csb.app',
+        'https://marsallis.github.io'
+    ],
     methods: ['GET', 'POST'],
     credentials: true
 }));
