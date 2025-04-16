@@ -1,0 +1,29 @@
+{
+    "name": "moveflow-app",
+    "version": "1.0.0",
+    "description": "Fix & Flip ROI Calculator with Zillow Comparables",
+    "type": "module",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server/server.js",
+        "server": "node server/server.js",
+        "client": "cd client && npm run dev",
+        "dev": "concurrently \"npm run server\" \"npm run client\"",
+        "build": "cd client && npm run build",
+        "install-client": "cd client && npm install",
+        "postinstall": "npm run install-client"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^4.18.3",
+        "node-fetch": "^3.3.2",
+        "undici": "^6.6.2"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}

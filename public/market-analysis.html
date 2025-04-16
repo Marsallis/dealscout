@@ -1,0 +1,559 @@
+<!-- market-analysis.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MoveFlow - Market Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            padding-top: 0;
+            margin: 0;
+        }
+        .nav-container {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        .nav-link {
+            position: relative;
+            color: #4B5563;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #3B82F6;
+        }
+        .nav-link.active {
+            color: #3B82F6;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #3B82F6;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        .logo {
+            color: #3B82F6;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        .logo-icon {
+            font-size: 1.5rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-md fixed w-full z-50 top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="nav-container">
+                <div class="flex items-center justify-between w-full">
+                    <a href="index.html" class="logo">
+                        <i class="fas fa-home logo-icon"></i>
+                        <span>MoveFlow</span>
+                    </a>
+                    <div class="nav-links">
+                        <a href="index.html" class="nav-link">Home</a>
+                        <a href="comparables.html" class="nav-link">Comparables</a>
+                        <a href="calculator.html" class="nav-link">Calculator</a>
+                        <a href="market-analysis.html" class="nav-link active">Market Analysis</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8 mt-16">
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">Market Analysis</h1>
+                <p class="mt-4 text-gray-600">Enter latitude, longitude, and radius to get neighborhood insights.</p>
+            </div>
+
+            <div id="errorAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <strong class="font-bold">Error!</strong>
+                <span id="errorMessage" class="block sm:inline"></span>
+            </div>
+
+            <div id="loadingIndicator" class="hidden text-center py-4">
+                <i class="fas fa-circle-notch animate-spin text-blue-600 text-2xl"></i>
+                <p class="mt-2 text-gray-600">Fetching market insights...</p>
+            </div>
+
+            <form id="marketAnalysisForm" class="space-y-6">
+                <div>
+                    <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
+                    <input type="number" step="any" id="latitude" name="latitude" required class="w-full p-2 rounded border" placeholder="e.g. 29.4252" />
+                </div>
+                <div>
+                    <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
+                    <input type="number" step="any" id="longitude" name="longitude" required class="w-full p-2 rounded border" placeholder="e.g. -98.4946" />
+                </div>
+                <div>
+                    <label for="radius" class="block text-sm font-medium text-gray-700">Radius (miles)</label>
+                    <input type="number" step="any" id="radius" name="radius" required min="0" class="w-full p-2 rounded border" placeholder="e.g. 0.5" />
+                </div>
+
+                <button type="submit" id="submitButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">
+                    Get Market Insights
+                </button>
+            </form>
+
+            <div id="results" class="hidden mt-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Market Insights</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Population & Households -->
+                    <div class="bg-blue-50 p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Population & Households</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Population:</span>
+                                <span class="font-medium" id="totalPopulation">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Households:</span>
+                                <span class="font-medium" id="totalHouseholds">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Average Household Size:</span>
+                                <span class="font-medium" id="avgHouseholdSize">-</span>
+                            </div>
+                            <button class="mt-4 text-blue-600 hover:text-blue-800 text-sm" onclick="toggleDetails('populationDetails')">
+                                More Details <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="populationDetails" class="hidden mt-4 space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Mean Age:</span>
+                                    <span class="font-medium" id="meanAge">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Median Age:</span>
+                                    <span class="font-medium" id="medianAge">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Under 5:</span>
+                                    <span class="font-medium" id="under5">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Age 5-13:</span>
+                                    <span class="font-medium" id="age5to13">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Age 14-17:</span>
+                                    <span class="font-medium" id="age14to17">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Children Percentage:</span>
+                                    <span class="font-medium" id="childrenPercentage">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Income -->
+                    <div class="bg-green-50 p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Income</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Average Income:</span>
+                                <span class="font-medium" id="avgIncome">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Median Income:</span>
+                                <span class="font-medium" id="medianIncome">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Households with Children:</span>
+                                <span class="font-medium" id="householdsWithChildren">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Education -->
+                    <div class="bg-purple-50 p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Education</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">College Educated:</span>
+                                <span class="font-medium" id="collegeEducated">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">High School Graduates:</span>
+                                <span class="font-medium" id="highSchoolGrads">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Less than High School:</span>
+                                <span class="font-medium" id="lessThanHighSchool">-</span>
+                            </div>
+                            <button class="mt-4 text-blue-600 hover:text-blue-800 text-sm" onclick="toggleDetails('educationDetails')">
+                                More Details <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="educationDetails" class="hidden mt-4 space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">No High School:</span>
+                                    <span class="font-medium" id="noHighSchool">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Some College:</span>
+                                    <span class="font-medium" id="someCollege">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Bachelor's Degree:</span>
+                                    <span class="font-medium" id="bachelors">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Master's Degree:</span>
+                                    <span class="font-medium" id="masters">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Professional Degree:</span>
+                                    <span class="font-medium" id="professionalDegree">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Ph.D.:</span>
+                                    <span class="font-medium" id="phd">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transportation -->
+                    <div class="bg-yellow-50 p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Transportation</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Average Cars per Household:</span>
+                                <span class="font-medium" id="avgCars">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">No Car Percentage:</span>
+                                <span class="font-medium" id="noCar">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Average Commute Time:</span>
+                                <span class="font-medium" id="avgCommuteTime">-</span>
+                            </div>
+                            <button class="mt-4 text-blue-600 hover:text-blue-800 text-sm" onclick="toggleDetails('transportationDetails')">
+                                More Details <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="transportationDetails" class="hidden mt-4 space-y-2">
+                                <h4 class="font-medium text-gray-700">Commute Modes</h4>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Car:</span>
+                                    <span class="font-medium" id="commuteCar">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Public Transit:</span>
+                                    <span class="font-medium" id="commutePT">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Walk:</span>
+                                    <span class="font-medium" id="commuteWalk">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Bicycle:</span>
+                                    <span class="font-medium" id="commuteBicycle">-</span>
+                                </div>
+                                <h4 class="font-medium text-gray-700 mt-4">Commute Time Distribution</h4>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Under 15 min:</span>
+                                    <span class="font-medium" id="commuteUnder15">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">15-30 min:</span>
+                                    <span class="font-medium" id="commute15to30">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">30-60 min:</span>
+                                    <span class="font-medium" id="commute30to60">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Over 60 min:</span>
+                                    <span class="font-medium" id="commuteOver60">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Language -->
+                    <div class="bg-pink-50 p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Language</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">English:</span>
+                                <span class="font-medium" id="languageEnglish">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Spanish:</span>
+                                <span class="font-medium" id="languageSpanish">-</span>
+                            </div>
+                            <button class="mt-4 text-blue-600 hover:text-blue-800 text-sm" onclick="toggleDetails('languageDetails')">
+                                More Details <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="languageDetails" class="hidden mt-4 space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Other European:</span>
+                                    <span class="font-medium" id="languageEuropean">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Asian/Pacific Island:</span>
+                                    <span class="font-medium" id="languageAsian">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Other:</span>
+                                    <span class="font-medium" id="languageOther">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Work -->
+                    <div class="bg-indigo-50 p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Work</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Average Weekly Hours:</span>
+                                <span class="font-medium" id="avgWeeklyHours">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MoveFlow Score -->
+                    <div class="bg-teal-50 p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">MoveFlow Score</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Overall Score:</span>
+                                <span class="font-medium" id="moveflowScore">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Rating:</span>
+                                <span class="font-medium" id="moveflowRating">-</span>
+                            </div>
+                            <button class="mt-4 text-blue-600 hover:text-blue-800 text-sm" onclick="toggleDetails('scoreDetails')">
+                                More Details <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="scoreDetails" class="hidden mt-4 space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Economic Score:</span>
+                                    <span class="font-medium" id="economicScore">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Education Score:</span>
+                                    <span class="font-medium" id="educationScore">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Lifestyle Score:</span>
+                                    <span class="font-medium" id="lifestyleScore">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Mobility Score:</span>
+                                    <span class="font-medium" id="mobilityScore">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Data Modal -->
+            <div id="fullDataModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+                <div class="relative top-20 mx-auto p-5 border w-4/5 shadow-lg rounded-md bg-white">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-900">Full Market Analysis Data</h3>
+                        <button id="closeModalBtn" class="text-gray-400 hover:text-gray-500">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="max-h-[70vh] overflow-y-auto">
+                        <pre id="fullDataContent" class="bg-gray-50 p-4 rounded text-sm"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let fullData = null;
+
+        function toggleDetails(id) {
+            const details = document.getElementById(id);
+            const button = details.previousElementSibling;
+            const icon = button.querySelector('i');
+            
+            if (details.classList.contains('hidden')) {
+                details.classList.remove('hidden');
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                details.classList.add('hidden');
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        }
+
+        document.getElementById('marketAnalysisForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const latitude = parseFloat(document.getElementById('latitude').value);
+            const longitude = parseFloat(document.getElementById('longitude').value);
+            const radius = parseFloat(document.getElementById('radius').value);
+
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            const results = document.getElementById('results');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const submitButton = document.getElementById('submitButton');
+
+            errorAlert.classList.add('hidden');
+            results.classList.add('hidden');
+
+            if (isNaN(latitude) || isNaN(longitude) || isNaN(radius) || radius < 0) {
+                errorMessage.textContent = 'Please enter valid numeric values.';
+                errorAlert.classList.remove('hidden');
+                return;
+            }
+
+            loadingIndicator.classList.remove('hidden');
+            submitButton.disabled = true;
+
+            try {
+                const response = await fetch('/api/market-analysis', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ latitude, longitude, radius_miles: radius })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Server returned an error');
+                }
+
+                // Store the full data
+                fullData = data;
+
+                // Update the UI with the data
+                // Population & Households
+                document.getElementById('totalPopulation').textContent = data.total_population.toLocaleString();
+                document.getElementById('totalHouseholds').textContent = data.total_households.toLocaleString();
+                document.getElementById('avgHouseholdSize').textContent = data.household.average_size.toFixed(1);
+                document.getElementById('meanAge').textContent = data.age.mean.toFixed(1);
+                document.getElementById('medianAge').textContent = data.age.median.toFixed(1);
+                document.getElementById('under5').textContent = `${data.age.under_5_percentage}%`;
+                document.getElementById('age5to13').textContent = `${data.age.age_5_to_13_percentage}%`;
+                document.getElementById('age14to17').textContent = `${data.age.age_14_to_17_percentage}%`;
+                document.getElementById('childrenPercentage').textContent = `${data.age.children_percentage}%`;
+
+                // Income
+                document.getElementById('avgIncome').textContent = `$${data.household.average_income.toLocaleString()}`;
+                document.getElementById('medianIncome').textContent = `$${data.household.median_income.toLocaleString()}`;
+                document.getElementById('householdsWithChildren').textContent = `${data.household.percentage_with_children}%`;
+
+                // Education
+                document.getElementById('collegeEducated').textContent = `${data.education.college_educated_percentage}%`;
+                document.getElementById('highSchoolGrads').textContent = `${data.education.high_school_percentage}%`;
+                document.getElementById('lessThanHighSchool').textContent = `${data.education.less_than_high_school}%`;
+                document.getElementById('noHighSchool').textContent = `${data.education.levels['no high school']}%`;
+                document.getElementById('someCollege').textContent = `${data.education.levels['some college']}%`;
+                document.getElementById('bachelors').textContent = `${data.education.levels.bachelor}%`;
+                document.getElementById('masters').textContent = `${data.education.levels.master}%`;
+                document.getElementById('professionalDegree').textContent = `${data.education.levels['professional degree']}%`;
+                document.getElementById('phd').textContent = `${data.education.levels['Ph.D.']}%`;
+
+                // Transportation
+                document.getElementById('avgCars').textContent = data.transportation.avg_cars_per_household.toFixed(1);
+                document.getElementById('noCar').textContent = `${data.transportation.no_car_percentage}%`;
+                document.getElementById('avgCommuteTime').textContent = `${data.transportation.commute_time.average_minutes} min`;
+                document.getElementById('commuteCar').textContent = `${data.transportation.commute_modes.car}%`;
+                document.getElementById('commutePT').textContent = `${data.transportation.commute_modes.pt}%`;
+                document.getElementById('commuteWalk').textContent = `${data.transportation.commute_modes.walk}%`;
+                document.getElementById('commuteBicycle').textContent = `${data.transportation.commute_modes.bicycle}%`;
+                document.getElementById('commuteUnder15').textContent = `${data.transportation.commute_time.under_15min_percentage}%`;
+                document.getElementById('commute15to30').textContent = `${data.transportation.commute_time['15_to_30min_percentage']}%`;
+                document.getElementById('commute30to60').textContent = `${data.transportation.commute_time['30_to_60min_percentage']}%`;
+                document.getElementById('commuteOver60').textContent = `${data.transportation.commute_time.over_60min_percentage}%`;
+
+                // Language
+                document.getElementById('languageEnglish').textContent = `${data.language.distribution.English}%`;
+                document.getElementById('languageSpanish').textContent = `${data.language.distribution.Spanish}%`;
+                document.getElementById('languageEuropean').textContent = `${data.language.distribution['other European language']}%`;
+                document.getElementById('languageAsian').textContent = `${data.language.distribution['Asian or Pacific Island language']}%`;
+                document.getElementById('languageOther').textContent = `${data.language.distribution.other}%`;
+
+                // Work
+                document.getElementById('avgWeeklyHours').textContent = data.work.avg_weekly_working_hours.toFixed(1);
+
+                // MoveFlow Score
+                document.getElementById('moveflowScore').textContent = data.moveflow_score.score;
+                document.getElementById('moveflowRating').textContent = data.moveflow_score.rating;
+                document.getElementById('economicScore').textContent = data.moveflow_score.components.economic;
+                document.getElementById('educationScore').textContent = data.moveflow_score.components.education;
+                document.getElementById('lifestyleScore').textContent = data.moveflow_score.components.lifestyle;
+                document.getElementById('mobilityScore').textContent = data.moveflow_score.components.mobility;
+
+                results.classList.remove('hidden');
+            } catch (err) {
+                errorMessage.textContent = err.message;
+                errorAlert.classList.remove('hidden');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+                submitButton.disabled = false;
+            }
+        });
+
+        // Handle full data view
+        document.getElementById('viewFullDataBtn').addEventListener('click', function() {
+            if (fullData) {
+                document.getElementById('fullDataContent').textContent = JSON.stringify(fullData, null, 2);
+                document.getElementById('fullDataModal').classList.remove('hidden');
+            }
+        });
+
+        // Close modal
+        document.getElementById('closeModalBtn').addEventListener('click', function() {
+            document.getElementById('fullDataModal').classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('fullDataModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

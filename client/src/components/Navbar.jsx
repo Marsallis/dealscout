@@ -1,5 +1,4 @@
 import { Link, useLocation } from 'react-router-dom';
-import { HomeIcon } from '@heroicons/react/24/solid';
 
 const Navbar = () => {
   const location = useLocation();
@@ -7,44 +6,38 @@ const Navbar = () => {
   return (
     <nav className="bg-white shadow-md fixed w-full z-50 top-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-blue-600 font-semibold hover:scale-105 transition-transform">
-            <HomeIcon className="h-6 w-6" />
-            <span>MoveFlow</span>
-          </Link>
-          <div className="flex items-center gap-8">
-            <Link
-              to="/"
-              className={`relative py-2 text-gray-600 hover:text-blue-600 transition-colors ${
-                location.pathname === '/' ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600' : ''
-              }`}
-            >
-              Home
+        <div className="nav-container">
+          <div className="flex items-center justify-between w-full">
+            <Link to="/" className="logo">
+              <i className="fas fa-home logo-icon"></i>
+              <span>DealScout</span>
             </Link>
-            <Link
-              to="/comparables"
-              className={`relative py-2 text-gray-600 hover:text-blue-600 transition-colors ${
-                location.pathname === '/comparables' ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600' : ''
-              }`}
-            >
-              Comparables
-            </Link>
-            <Link
-              to="/calculator"
-              className={`relative py-2 text-gray-600 hover:text-blue-600 transition-colors ${
-                location.pathname === '/calculator' ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600' : ''
-              }`}
-            >
-              Calculator
-            </Link>
-            <Link
-              to="/market-analysis"
-              className={`relative py-2 text-gray-600 hover:text-blue-600 transition-colors ${
-                location.pathname === '/market-analysis' ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600' : ''
-              }`}
-            >
-              Market Analysis
-            </Link>
+            <div className="nav-links">
+              <Link
+                to="/"
+                className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+              >
+                Home
+              </Link>
+              <Link
+                to="/market-analysis"
+                className={`nav-link ${location.pathname === '/market-analysis' ? 'active' : ''}`}
+              >
+                Market Analysis
+              </Link>
+              <Link
+                to="/comparables"
+                className={`nav-link ${location.pathname === '/comparables' ? 'active' : ''}`}
+              >
+                Comparables
+              </Link>
+              <Link
+                to="/calculator"
+                className={`nav-link ${location.pathname === '/calculator' ? 'active' : ''}`}
+              >
+                Calculator
+              </Link>
+            </div>
           </div>
         </div>
       </div>
