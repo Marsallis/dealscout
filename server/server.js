@@ -26,11 +26,15 @@ app.use(cors({
         'https://rvsxvt-8000.csb.app',
         'https://marsallis.github.io',
         'https://marsallis.github.io/dealscout',
-        'https://dealscout.github.io'
+        'https://dealscout.github.io',
+        'https://railway.app',
+        'https://*.railway.app'
     ],
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 }));
 
 // Handle preflight requests

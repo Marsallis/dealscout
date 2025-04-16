@@ -39,7 +39,7 @@ const MarketAnalysis = () => {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          withCredentials: true
+          withCredentials: false
         }
       );
       setResults(response.data);
