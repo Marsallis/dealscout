@@ -29,10 +29,11 @@ app.use(cors({
         'https://dealscout.github.io',
         'https://railway.app',
         'https://*.railway.app',
-        'https://marsallis.github.io'
+        'https://marsallis.github.io',
+        'https://dealscout-backend.railway.app'
     ],
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
     credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204
