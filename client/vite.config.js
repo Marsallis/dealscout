@@ -13,6 +13,8 @@ export default defineConfig({
       '/api': {
         target: 'https://dealscout-backend.railway.app',
         changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
       },
     },
   },

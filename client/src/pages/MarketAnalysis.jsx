@@ -38,13 +38,14 @@ const MarketAnalysis = () => {
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
-          }
+          },
+          withCredentials: true
         }
       );
       setResults(response.data);
     } catch (err) {
+      console.error('API Error:', err);
       setError(err.response?.data?.error || 'Error fetching market insights');
-      console.error('Error fetching market insights:', err);
     } finally {
       setLoading(false);
     }
