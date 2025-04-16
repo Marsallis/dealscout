@@ -24,12 +24,27 @@ const MarketAnalysis = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setResults(null);
 
     try {
-      const response = await axios.post('/api/market-analysis', formData);
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/market-analysis`,
+        {
+          latitude: formData.latitude,
+          longitude: formData.longitude,
+          radius_miles: formData.radius_miles
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }
+      );
       setResults(response.data);
     } catch (err) {
-      setError(err.response?.data?.error || 'An error occurred while fetching market insights');
+      setError(err.response?.data?.error || 'Error fetching market insights');
+      console.error('Error fetching market insights:', err);
     } finally {
       setLoading(false);
     }
