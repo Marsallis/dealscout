@@ -28,7 +28,7 @@ const MarketAnalysis = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/market-analysis`,
+        'https://dealscout-backend.railway.app/api/market-analysis',
         {
           latitude: formData.latitude,
           longitude: formData.longitude,
