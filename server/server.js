@@ -20,23 +20,10 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Enable CORS
 app.use(cors({
-    origin: [
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        'https://rvsxvt-8000.csb.app',
-        'https://marsallis.github.io',
-        'https://marsallis.github.io/dealscout',
-        'https://dealscout.github.io',
-        'https://railway.app',
-        'https://*.railway.app',
-        'https://marsallis.github.io',
-        'https://dealscout-backend.railway.app'
-    ],
+    origin: '*',
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
-    credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
 
 // Handle preflight requests

@@ -7,19 +7,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    rollupOptions: {
-      output: {
-        manualChunks: undefined
-      }
-    }
   },
   server: {
     proxy: {
       '/api': {
         target: 'https://dealscout-backend.railway.app',
         changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        secure: true
       },
     },
   },

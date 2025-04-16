@@ -37,10 +37,8 @@ const MarketAnalysis = () => {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Origin': 'https://marsallis.github.io'
-          },
-          withCredentials: false
+            'Accept': 'application/json'
+          }
         }
       );
       setResults(response.data);
