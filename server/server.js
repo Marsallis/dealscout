@@ -28,7 +28,8 @@ app.use(cors({
         'https://marsallis.github.io/dealscout',
         'https://dealscout.github.io',
         'https://railway.app',
-        'https://*.railway.app'
+        'https://*.railway.app',
+        'https://marsallis.github.io'
     ],
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
